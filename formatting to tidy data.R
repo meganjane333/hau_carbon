@@ -1,7 +1,7 @@
 # --- Carbon data wrangling ---
 # --- Author: Megan Lewis ---
 # --- Date: 2024-02-12 ---
-# --- ;ast updated: 2024-02-13 ---
+# --- last updated: 2024-02-13 ---
 
 #Goal: Take the output results of the carbon calculations and put them into a tidy format
 # one variable equals on column, one row equals one observation. 
