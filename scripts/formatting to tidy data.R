@@ -11,7 +11,7 @@ library(sjmisc)
 
 # import data 
 carbon_20 <- read.csv("carbon_2020.csv")
-
+glimpse(carbon_20)
 carbon_21 <- read_csv("carbon_2021.csv")
 glimpse(carbon_21)
 
@@ -27,7 +27,7 @@ c_20 <-
   rotate_df(rn = 'Enterprise', # ensuring the original column names are added as a new column called 'Enterprise' (may not be needed nut helps to keep track)
             cn = TRUE) %>% # # taking the information in the first column in carbon_2021 and ensuring they are used as column headers
   mutate(Year = "2020", # adding the year column to the dataset - set manually as 2021
-         .after = "report_id") %>% # making the year column show up after the 'report_id' column
+         .after = "report_id") #%>% # making the year column show up after the 'report_id' column
   select(-c('Enterprise')) # %>% # removing column as it is surplus to the data set ( a copy of lineitem_code)
 view(c_20)
 glimpse(c_20)

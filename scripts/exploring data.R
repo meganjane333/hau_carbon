@@ -1,0 +1,152 @@
+# Exploring carbon data
+
+c_data <- read.csv("carbon_data.csv")
+
+glimpse(c_data)
+
+library(tidyverse)
+library(ggplot2)
+library(unikn)
+
+cbbPal <- newpal(col = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"),
+                 names = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"))
+
+#prep data 
+
+c_data_1 <- c_data %>%
+  mutate(across(c(Year), ~ as.integer(.x))) %>%
+  mutate( direct_carbon = co2_direct_co2_kgco2e/1000, 
+          indirect_carbon = co2_indirect_co2_kgco2e/1000,  
+          total_carbon = co2_total_from_energy_use_kgco2e/1000,  
+          total_methane = methane_total_kgco2e/1000,  
+          total_nitox = nitrous_oxide_total_kgco2e/1000,  
+          tot_em_farming = total_co2e_emissions_from_farming_kgco2e/1000,   
+          net_em_land_use = net_emissions_from_land_use/1000,  
+          h_seq = sequestration_by_hedges/1000,
+          f_seq = sequestration_by_forestry/1000,
+          em_per_ha_adj = emissions_per_adjusted_hectare_kgco2e_ha/1000 
+  )
+
+# total direct carbon
+
+#total direct carbon
+c_data_1 %>%
+  filter(!direct_carbon == 0) %>%
+  ggplot(aes(x=Year, y = direct_carbon)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total direct carbon emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total indirect carbon
+
+c_data_1 %>%
+  filter(!indirect_carbon == 0) %>%
+  ggplot(aes(x=Year, y = indirect_carbon)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total indirect carbon emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total carbon
+c_data_1 %>%
+  filter(!total_carbon == 0) %>%
+  ggplot(aes(x=Year, y = total_carbon)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total carbon emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total methane
+c_data_1 %>%
+  filter(!total_methane == 0) %>%
+  ggplot(aes(x=Year, y = total_methane)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total methane emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total nitrousoxide
+c_data_1 %>%
+  filter(!total_nitox == 0) %>%
+  ggplot(aes(x=Year, y = total_nitox)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total nitrous oxide emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total em from farming
+
+c_data_1 %>%
+  filter(!tot_em_farming == 0) %>%
+  ggplot(aes(x=Year, y = tot_em_farming)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Total direct carbon emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()
+
+#total em from landuse
+
+c_data_1 %>%
+  filter(!net_em_land_use == 0) %>%
+  ggplot(aes(x=Year, y = net_em_land_use)) +
+  geom_point(aes(colour = lineitem_code)) +
+  geom_line(aes(colour = lineitem_code, group=lineitem_code))+
+  scale_colour_manual(
+    labels = c("Whole farm","Beef", "Dairy", "Sheep", "Pigs", "Crop 1", "Crop 6", "Graze 6"),
+    limits = c("WHOLE_FARM", "BEEF", "DAIRY", "SHEEP", "PIGS", "C1", "C6", "G6"),
+    values = cbbPal) +
+  labs(
+    title = NULL,  colour = "Enterprise",
+    x = "Year", y = "Net carbon emissions (1000 kgco2e)",
+  ) +
+  scale_x_continuous(breaks = seq(2020, 2022, 1)) +
+  theme_bw()

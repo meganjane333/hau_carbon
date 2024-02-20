@@ -1,0 +1,137 @@
+lineitem code,definition
+WHOLE_FARM,Whole farm
+BEEF,Beef
+SHEEP,Sheep
+DAIRY,Dairy
+PIGS,Pigs
+POULTRY,Poultry
+FORAGE,Forage
+G1,Rough grazing
+G2,Biodiversity
+G4,Pasture grazing
+G5,Silage and graze
+G6,Hay and graze
+F1,Kale / stubble turnips / swedes / etc
+F2,Fodder beet
+F3,Wholecrop cereals
+F4,Forage maize
+F5,"Legumes foragews (clovers, lucerne)"
+C1,Feed wheat -grain
+C1_1,Milling wheat - grain
+C2,Feed winter barley - grain
+C2_1,Malting winter barley
+C3,Feed spring barley - grain
+C3_1,Malting spring barley - grain
+C4,Winter oats - grain
+C5,Spring oats - grain
+C5_1,"Minor cereals (rye, triticale) - grain"
+C6,Oilseed rape - seed
+C7,Field beans - seed
+C8,Field peas - seed
+C9,Grain maize - grain
+H1,Hedgrows > 30 yrs
+H2,Hedgrerows < 30 yrs
+W1,Broadleaved > 20 yrs
+W2,Broadleaved 10-20 yrs
+W3,Broadleaved < 10 yrs
+W4,Conifer > 20 yrs
+W5,Conifer 10-20 yrs
+W6,Conifer < 10 yrs
+M1,"Roads, Yards and Buildings"
+T1,Total area (ha)
+P1,Seed potatoes
+P2,Early potatoes
+P3,Maincrop ware potatoes
+P4,Maincrop processing potatoes
+R1,Sugar beet
+R2,Swedes/turnips
+R3,Carrots 
+R4,Other root vegtables
+V1,Processing peas
+V2,Processing beans
+V3,Other legume veg
+V4,Cabbages
+V5,Cauliflower
+V6,Calabrese
+V7,Brussel sprouts
+V8,Other brassica veg
+V9,Lettuce
+V10,Onions / leeks
+V11,Celery
+V12,Radish
+V13,Spring Onions
+V14,Baby Leaf
+V15,Asparagus
+V16,Spinach
+V17,Chinese leaf
+V18,Helda Beans
+V19,Runner Beans
+V20,Sugar Snap Peas
+V21,Dwarf Beans
+V22,Picking Peas
+V23,Sprouting Broccoli
+V24,Iceberg
+V25,Gem
+V26,Pumpkins
+V27,Squash
+V28,Courgette
+V29,Broad beans
+FR1,Strawberries
+FR2,Raspberries
+FR3,Blueberries
+FR4,Blackberries
+FR5,Top fruit
+FR6,Melon
+FR7,Watermelon
+FR8,Blackcurrants
+FR9,Redcurrants
+FR10,Gooseberries
+FR11,Apples - dessert
+FR12,Apples - cooking
+FR13,Apples - cider
+FR14,Pears
+FR15,Plums
+FR16,Cherries
+OC1,Bulbs
+OC2,Fibre crops
+BA1,Suckler cow - Beef
+BA2,Bull - Beef
+BY1,Heifer (24 - 36 months) - Beef
+BY2,Heifer (12 - 24 months) - Beef
+BY3,Heifer (0 - 12 months) - Beef
+BY4,Steer (24 - 36 months) - Beef
+BY5,Steer (12 - 24 months) - Beef
+BY6,Steer (0-12 months) - Beef
+BY7,Male entire (12 -23 months) - Beef
+BY8,Male entire (0 - 12 months) - Beef
+DA1,Cow - Dairy 
+DA2,Bull - Dairy 
+DY1,Heifer (24 - 36 months) - Dairy 
+DY2,Heifer (12 - 24 months) - Dairy 
+DY3,Heifer (0 - 12 months) - Dairy 
+DY4,Steer (24 - 36 months) - Dairy 
+DY5,Steer (12 - 24 months) - Dairy 
+DY6,Steer (0-12 months) - Dairy 
+DY7,Male entire (12 -23 months) - Dairy 
+DY8,Male entire (0 - 12 months) - Dairy 
+PG1,Sows - Pigs
+PG2,Gilts - Pigs
+PG3,Boars - Pigs
+PG4,Finisher - Pigs
+PG5,Grower - Pigs
+PG7,Weaner - Pigs
+PG8,Suckling piglets - Pigs
+SA1,Ewes - Sheep
+SA2,Tups/Rams - Sheep
+SY1,Hoggs ( Ewe lamb for breeding 6 - 12 months) - Sheep
+SY2,Gimmers (Ewe lamb for breeding >12 months) - Sheep
+SY3,Shearlings (Tups/Rams for breeding 6 - 12 months) - Sheep
+SY4,Lamb male - Sheep
+PO1,Hens - Poultry
+PO2,Pullets  - Poultry
+PO3,Cockerels - Poultry
+PO4,Cocks/roosters - Poultry
+PO5,Broilers - Poultry
+PO6,Chicks - Poultry
+PO7,Ducks - Poultry
+PO8,Turkeys - Poultry
