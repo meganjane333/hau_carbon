@@ -1,0 +1,308 @@
+---
+title: "Carbon dashboard demo"
+author: "ES data group"
+format: 
+  dashboard:
+    scrolling: true 
+last updated: 2024-03-12
+---
+
+# Carbon - simple {#carbon}
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(unikn)
+library(DT)
+
+carbon_data <- read.csv("data/carbon_data_clean.csv")
+
+cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+theme_m.rl <- theme(
+  panel.grid.minor = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.border = element_rect(linewidth = 1,
+                              color = "black"),
+  axis.title.x = element_text(face = "bold",
+                              size = 14,
+                              vjust = 1.5),
+  axis.text.x = element_text(
+    angle = 0,
+    vjust = 1,
+    hjust = 0.5,
+    size = 14
+  ),
+  axis.title.y = element_text(
+    angle = 90,
+    vjust = 2.5,
+    hjust = 0.5,
+    face = "bold",
+    size = 14
+  ),
+  axis.text.y = element_text(size = 14),
+  strip.text.x = element_text(size = 14),
+  legend.position = "right",
+  legend.title = element_text(size = 12, face = "bold"),
+  legend.text = element_text(size = 12), 
+)
+
+
+current_net_co2e <- as.list(carbon_data %>% 
+  select(Year, lineitem_code, net_emissions_from_land_use) %>%
+  filter(lineitem_code == "WHOLE_FARM" & Year == "2022") %>%
+  select(net_emissions_from_land_use))[[1]]
+
+
+tot_co2e_22 <- 
+  as.list(carbon_data %>%
+    select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
+    group_by(Year) %>%
+    summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
+    filter(Year == "2022") %>%
+    select(total_co2e))[[1]]
+
+tot_co2e_21 <- 
+  as.list(carbon_data %>%
+    select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
+    group_by(Year) %>%
+    summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
+    filter(Year == "2021") %>%
+    select(total_co2e))[[1]]
+
+tot_co2e_20 <- 
+  as.list(carbon_data %>%
+    select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
+    group_by(Year) %>%
+    summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
+    filter(Year == "2020") %>%
+    select(total_co2e))[[1]]
+  
+carbon_reduction_22_21 <- tot_co2e_22 - tot_co2e_21
+carbon_reduction_21_20 <- tot_co2e_21 - tot_co2e_20
+av_carbon_reduction <- mean(carbon_reduction_21_20,carbon_reduction_22_21)
+
+an_seq_forest_hedge_22 <- 
+as.list(carbon_data %>%
+  group_by(Year) %>% 
+  summarise(tot_forest = sum(sequestration_by_forestry), 
+            tot_hedge = sum(sequestration_by_hedges),
+            tot_seq = tot_forest + tot_hedge) %>%
+    filter(Year == 2022) %>%
+    select(tot_seq))[[1]]
+
+carbon_seq_tot <- (as.list(
+  carbon_data %>% 
+    group_by(Year) %>%
+    summarise(carb_seq_tot = sum(carbon_seq_total_kgco2e )) %>%
+    filter(Year == "2022") %>%
+    select(carb_seq_tot)
+)[[1]])*-1
+# 
+# current_net_co2e ==  tot_co2e_22 - an_seq_forest_hedge_22
+# list(current_net_co2e, tot_co2e_22, an_seq_forest_hedge_22, carbon_seq_tot)
+# est_co2_2030 
+# 
+# tot_co2e_22-current_net_co2e # 7016159 sequestered somewhere?
+# carbon_seq_tot #85049.66 
+# an_seq_forest_hedge_22 # 443946.2
+# 7016159 - 85049.66 # = 6931109
+# 6931109 - 443946.2
+# current_net_co2e == tot_co2e_22 - ((carbon_seq_tot+an_seq_forest_hedge_22))
+```
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "Net Carbon Emissions"
+list(
+  value = current_net_co2e
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Total CO2e"
+list(
+  value = tot_co2e_22
+)
+```
+
+
+```{r}
+#| content: valuebox
+#| title: "Reduction since previous year"
+list(
+  value = carbon_reduction_22_21
+)
+```
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "Average annual carbon reduction"
+list(
+  value = av_carbon_reduction
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Average annual sequestration from forestry and hedgerows"
+list(
+  value = an_seq_forest_hedge_22
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Estimates CO2e by 2030"
+list(
+  #value = est_co2_2030
+)
+```
+
+
+## Row
+
+### Column {.tabset title="GHGs" height="75%"}
+
+```{r}
+#| title: Total CO2e 
+carbon_data %>%
+  mutate(carbon_equiv_tot = total_co2e_emissions_from_farming_kgco2e/1000) %>%
+ggplot( aes(x = Year, y = carbon_equiv_tot, fill = lineitem_code)) +
+   geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Total Carbon Equivalent Emissions (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+```{r}
+#| title: Direct Carbon
+
+carbon_data %>%
+  mutate(direct_carbon_tot = co2_direct_co2_kgco2e/1000) %>%
+ggplot( aes(x = Year, y = direct_carbon_tot, fill = lineitem_code)) +
+  geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Direct Carbon Emissions (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+```{r}
+#| title: Indirect Carbon 
+carbon_data %>%
+  mutate(indirect_carbon_tot = co2_indirect_co2_kgco2e/1000) %>%
+ggplot( aes(x = Year, y = indirect_carbon_tot, fill = lineitem_code)) +
+   geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Indirect Carbon Emissions (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+```{r}
+#| title: Methane
+carbon_data %>%
+  mutate(methane = methane_total_kgco2e/1000) %>%
+ggplot( aes(x = Year, y = methane, fill = lineitem_code)) +
+   geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Methane Emissions (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+```{r}
+#| title: Nitrous Oxide
+carbon_data %>%
+  mutate(nitrous_oxide = nitrous_oxide_total_kgco2e/1000) %>%
+ggplot( aes(x = Year, y = nitrous_oxide, fill = lineitem_code)) +
+   geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Nitrous Oxide Emissions (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+### Column {.tabset title="Sequestration"}
+
+```{r}
+#| title: Forests
+carbon_data %>%
+  mutate(sequestration_by_forestry = sequestration_by_forestry/1000) %>%
+  filter(lineitem_code == "WHOLE_FARM") %>%
+ggplot( aes(x = Year, y = sequestration_by_forestry)) +
+   geom_bar(position="dodge", stat="identity", fill = "black") +
+  labs( y = "Foresty sequestration  (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+
+```
+
+```{r}
+#| title: Hedgerows 
+
+carbon_data %>%
+  mutate(sequestration_by_hedges = sequestration_by_hedges/1000) %>%
+ggplot( aes(x = Year, y = sequestration_by_hedges, fill = lineitem_code)) +
+   geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual(
+    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+  labs( y = "Hedgerow Sequestration (CO2e/kg thou.)",
+        x = "Year",  fill = "Sector") + 
+  theme_bw()
+```
+
+## Row
+```{r} 
+datatable(carbon_data)
+```
+
+## Row {.tabset}
+
+### Column {title="Data Information"}
+
+This data comprise the output results from the [AgreCalc Farm Carbon Calculator](https://www.agrecalc.com/) for the years 2020 through to 2022. Input data was collated from across the farm for each year.
+
+::: {.callout-important collapse="true"}
+### Disclaimer
+
+N.B. Data was inputted by different staff members across each year and during this time updates have also been made to the Agrecalc calculator. Therefore, it is important to note that data may not be directly comparable. Updates will be made to address this issue.
+
+N.B. The current data set only focuses on the main livestock enterprises at this time due to inconsistencies in report output between years.
+:::
+
+### Data files
+
+
+| File name                                     | Link                                                           |
+|----------------------------------|--------------------------------------|
+| Cleaned data (data used here)                 | [carbon_data_clean.csv](carbon_data_clean.csv)                 |
+| Raw data                                      | [carbon_data.csv](carbon_data.csv)                             |
+| Carbon data excel file (inc. data dictionary) | [Carbon_data_agrecalc_v02.xlsx](Carbon_data_aregcalc_v02.xlsx) |
+
