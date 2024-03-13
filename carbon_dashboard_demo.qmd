@@ -55,7 +55,13 @@ theme_m.rl <- theme(
   legend.text = element_text(size = 12), 
 )
 
-cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+sector_pal <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442"
+# , "#0072B2", "#D55E00", "#CC79A7") # can add more if needed later
+)
+
+ghgpal <- c( "#CC6677", "#AA4499", "#117733", "#332288" #, 
+            # "#44AA99", "#88CCEE", "#DDCC77", 
+           ) 
 
 my_comma <- scales::label_comma(accuracy = .01, big.mark = ",", decimal.mark = ".")
 
@@ -192,7 +198,7 @@ ggplot( aes(x = Year, y = carbon_equiv_tot, fill = lineitem_code)) +
     scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
   ylab(bquote(atop(bold(.(Total~Carbon~Equivalent~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs(
     x = "Year",
@@ -213,7 +219,7 @@ ggplot( aes(x = Year, y = direct_carbon_tot, fill = lineitem_code)) +
     scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
   ylab(bquote(atop(bold(.(Direct~Carbon~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   # ylab(bquote(atop("Direct Carbon Emissions ", "(tonnes"~CO[2]~"e)"))) +
   labs(
@@ -236,7 +242,7 @@ ggplot( aes(x = Year, y = indirect_carbon_tot, fill = lineitem_code)) +
     scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
   # ylab(bquote(atop("Indirect Carbon Emissions ", "(tonnes"~CO[2]~"e)"))) +
   ylab(bquote(atop(bold(.(Indirect~Carbon~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs( 
@@ -259,7 +265,7 @@ ggplot( aes(x = Year, y = methane, fill = lineitem_code)) +
     scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
   # ylab(bquote(atop("Methane Emissions ", "(tonnes"~CO[2]~"e)"))) +
   ylab(bquote(atop(bold(.(Methane~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs(
@@ -281,7 +287,7 @@ ggplot( aes(x = Year, y = nitrous_oxide, fill = lineitem_code)) +
     scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
     # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
   ylab(bquote(atop(bold(.(Nitrous~Oxide~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs(
@@ -313,7 +319,7 @@ mutate(emission = values/1000) %>%
   scale_fill_manual(
     labels = c("Direct carbon", "Indirect carbon", "Methane", "Nitrous oxide"),
     limits = c("direct", "indirect", "methane", "nitrous_oxide"),
-    values = cbPalette) +
+    values = ghgpal) +
     # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
   ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs(
@@ -345,7 +351,7 @@ mutate(emission = values/1000) %>%
   scale_fill_manual(
     labels = c("Dairy", "Beef", "Pigs", "Sheep"),
     limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
-    values = cbPalette) +
+    values = sector_pal) +
     # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
   ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
   labs(
