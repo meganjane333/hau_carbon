@@ -25,3 +25,5 @@ for(i in 6:ncol(data)){
 # write.csv(data, "data/carbon_data_clean.csv", row.names=F)
 
 rm(i, rownuke)
+
+

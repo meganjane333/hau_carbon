@@ -1,31 +1,37 @@
 ---
-title: "Carbon dashboard demo"
-author: "ES data group"
-format: 
-  dashboard:
-    scrolling: true 
-last updated: 2024-03-12
+title: "Dashboard demo"
+logo: "images/nl_agridat_hex_tp.png"
+format: dashboard
+date: 2024-03-12
+date-modified: 2024-03-13
+orientation: columns
+expandable: false
+theme: 
+  light: flatly_edited.scss
+  dark: darkly_edited.scss
 ---
 
 # Carbon - simple {#carbon}
 
-```{r, echo=FALSE}
+```{r Dashboard set up, echo=FALSE}
 library(tidyverse)
 library(knitr)
 library(rmarkdown)
 library(ggplot2)
-library(unikn)
 library(DT)
+library(bslib)
+library(shiny)
+library(bsicons)
+library(htmltools)
 
-carbon_data <- read.csv("data/carbon_data_clean.csv")
-
-cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
+carbon_data <- read.csv("data/carbon_data_clean.csv") %>% 
+  mutate(lineitem_code = factor(lineitem_code, levels = c("DAIRY", "BEEF", "PIGS", "SHEEP", "WHOLE_FARM")))
+  
 theme_m.rl <- theme(
-  panel.grid.minor = element_blank(),
-  panel.grid.major = element_blank(),
-  panel.border = element_rect(linewidth = 1,
-                              color = "black"),
+  # panel.grid.minor = element_blank(),
+  # panel.grid.major = element_blank(),
+  # panel.border = element_rect(size = 1,
+  #                             color = "black"),
   axis.title.x = element_text(face = "bold",
                               size = 14,
                               vjust = 1.5),
@@ -49,260 +55,346 @@ theme_m.rl <- theme(
   legend.text = element_text(size = 12), 
 )
 
+cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-current_net_co2e <- as.list(carbon_data %>% 
+my_comma <- scales::label_comma(accuracy = .01, big.mark = ",", decimal.mark = ".")
+
+current_net_co2e <- as.numeric(as.list(carbon_data %>% 
   select(Year, lineitem_code, net_emissions_from_land_use) %>%
   filter(lineitem_code == "WHOLE_FARM" & Year == "2022") %>%
-  select(net_emissions_from_land_use))[[1]]
+  select(net_emissions_from_land_use))[[1]])/1000
 
 
 tot_co2e_22 <- 
-  as.list(carbon_data %>%
+  as.numeric(as.list(carbon_data %>%
     select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
     group_by(Year) %>%
     summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
     filter(Year == "2022") %>%
-    select(total_co2e))[[1]]
+    select(total_co2e))[[1]])/1000
 
 tot_co2e_21 <- 
-  as.list(carbon_data %>%
+  as.numeric(as.list(carbon_data %>%
     select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
     group_by(Year) %>%
     summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
     filter(Year == "2021") %>%
-    select(total_co2e))[[1]]
+    select(total_co2e))[[1]])/1000
 
 tot_co2e_20 <- 
-  as.list(carbon_data %>%
+  as.numeric(as.list(carbon_data %>%
     select(Year, total_co2e_emissions_from_farming_kgco2e) %>%
     group_by(Year) %>%
     summarise(total_co2e = sum(total_co2e_emissions_from_farming_kgco2e)) %>%
     filter(Year == "2020") %>%
-    select(total_co2e))[[1]]
+    select(total_co2e))[[1]])/1000
   
 carbon_reduction_22_21 <- tot_co2e_22 - tot_co2e_21
 carbon_reduction_21_20 <- tot_co2e_21 - tot_co2e_20
 av_carbon_reduction <- mean(carbon_reduction_21_20,carbon_reduction_22_21)
 
 an_seq_forest_hedge_22 <- 
-as.list(carbon_data %>%
+as.numeric(as.list(carbon_data %>%
   group_by(Year) %>% 
   summarise(tot_forest = sum(sequestration_by_forestry), 
             tot_hedge = sum(sequestration_by_hedges),
             tot_seq = tot_forest + tot_hedge) %>%
     filter(Year == 2022) %>%
-    select(tot_seq))[[1]]
+    select(tot_seq))[[1]])/1000
 
-carbon_seq_tot <- (as.list(
-  carbon_data %>% 
-    group_by(Year) %>%
-    summarise(carb_seq_tot = sum(carbon_seq_total_kgco2e )) %>%
-    filter(Year == "2022") %>%
-    select(carb_seq_tot)
-)[[1]])*-1
-# 
-# current_net_co2e ==  tot_co2e_22 - an_seq_forest_hedge_22
-# list(current_net_co2e, tot_co2e_22, an_seq_forest_hedge_22, carbon_seq_tot)
-# est_co2_2030 
-# 
-# tot_co2e_22-current_net_co2e # 7016159 sequestered somewhere?
-# carbon_seq_tot #85049.66 
-# an_seq_forest_hedge_22 # 443946.2
-# 7016159 - 85049.66 # = 6931109
-# 6931109 - 443946.2
-# current_net_co2e == tot_co2e_22 - ((carbon_seq_tot+an_seq_forest_hedge_22))
 ```
 
-## Row
+## Column {width="40%"}
 
-```{r}
-#| content: valuebox
-#| title: "Net Carbon Emissions"
-list(
-  value = current_net_co2e
-)
+### Row {height="30%"}
+
+```{r Latest available data value box}
+bslib::value_box(
+  title = "Latest available data",
+  value = "2022",
+  theme = "secondary",
+  )
+
+
 ```
 
-```{r}
-#| content: valuebox
-#| title: "Total CO2e"
-list(
-  value = tot_co2e_22
-)
+```{r Total co2e produced in 2022 value box}
+bslib::value_box(
+  title = h1(HTML("Total CO<sub>2</sub>e produced in 2022")),
+  value = my_comma(tot_co2e_22),
+  p(HTML("t CO<sub>2</sub>e")),
+  theme = "warning"
+  )
 ```
 
+### Row {height="30%"}
 
-```{r}
-#| content: valuebox
-#| title: "Reduction since previous year"
-list(
-  value = carbon_reduction_22_21
-)
+```{r net emissions in 2022 value box}
+bslib::value_box(
+  title = "Net emissions in 2022",
+  value = my_comma(current_net_co2e),
+   p(HTML("t CO<sub>2</sub>e")),
+  theme = "info"
+  )
+
 ```
 
-## Row
+```{r net emissions reduction 21-22 value box}
+bslib::value_box(
+  title = "2021/22 Net emission reduction",
+  value = my_comma(carbon_reduction_22_21),
+  p(HTML("t CO<sub>2</sub>e")),
+  theme = "success"
+  )
 
-```{r}
-#| content: valuebox
-#| title: "Average annual carbon reduction"
-list(
-  value = av_carbon_reduction
-)
+
 ```
 
-```{r}
-#| content: valuebox
-#| title: "Average annual sequestration from forestry and hedgerows"
-list(
-  value = an_seq_forest_hedge_22
-)
-```
+### Row {.tabset height="40%"}
 
-```{r}
-#| content: valuebox
-#| title: "Estimates CO2e by 2030"
-list(
-  #value = est_co2_2030
-)
-```
+::: {.card title="Data source"}
+This data comprise the output results from the [AgreCalc Farm Carbon Calculator](https://www.agrecalc.com/) for the years 2020 through to 2022. Input data was collated from across the farm for each year.
+
+N.B. Original data is in kg CO2e. Data presented in this dashboard has been converted to t CO2e.
+:::
+
+::: {.card title="Data limitations"}
+-   Data were inputted by different staff members across each year and during this time updates have also been made to the Agrecalc calculator. Therefore, it is important to note that data may not be directly comparable. Updates will be made to address this issue.
+
+-   The current data set only focuses on the main livestock enterprises at this time due to inconsistencies in report output between years.
+:::
+
+::: {.card title="Data files"}
+**Cleaned data** (data used here) :: [carbon_data_clean.csv](data/carbon_data_clean.csv)
+
+**Raw data** :: [carbon_data.csv](data/carbon_data.csv)
+
+**Carbon data excel file** inc. data dictionary ::[Carbon_data_agrecalc_v02.xlsx](data/Carbon_data_aregcalc_v02.xlsx)
+:::
+
+::: {.card title="Useful information"}
+**IPCC** :: Intergovernmental Panel on Climate Change.\
+**Carbon dioxide equivalent (CO**<sub>2</sub>e) :: The unit for measuring the **global warming potentials (GWP)** of greenhouse gases relative to that of carbon dioxide (CO<sub>2</sub>).
+:::
+
+## Column {.tabset width="60%"}
+
+```{r total GHG emission graph}
+#| title: Total GHG Emissions
+#| fig-cap: The total tonnes of carbon dioxide equivalent emissions produced from the Harper Adams Future Farm for the years 2020 to 2022. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
 
 
-## Row
-
-### Column {.tabset title="GHGs" height="75%"}
-
-```{r}
-#| title: Total CO2e 
 carbon_data %>%
   mutate(carbon_equiv_tot = total_co2e_emissions_from_farming_kgco2e/1000) %>%
+  filter(lineitem_code != "WHOLE_FARM") %>%
 ggplot( aes(x = Year, y = carbon_equiv_tot, fill = lineitem_code)) +
-   geom_bar(position="dodge", stat="identity") +
+   geom_bar(position="stack", stat="identity") +
     scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
     values = cbPalette) +
-  labs( y = "Total Carbon Equivalent Emissions (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
+  ylab(bquote(atop(bold(.(Total~Carbon~Equivalent~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs(
+    x = "Year",
+    fill = "Sector") + 
+  theme_bw()+
+  theme_m.rl
 ```
 
-```{r}
+```{r direct carbon graph}
 #| title: Direct Carbon
+#| fig-cap: The total tonnes of direct (Scope 1) carbon dioxide emissions produced from the Harper Adams Future Farm for the years 2020 to 2022. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
 
 carbon_data %>%
   mutate(direct_carbon_tot = co2_direct_co2_kgco2e/1000) %>%
+   filter(lineitem_code != "WHOLE_FARM") %>%
 ggplot( aes(x = Year, y = direct_carbon_tot, fill = lineitem_code)) +
-  geom_bar(position="dodge", stat="identity") +
+  geom_bar(position="stack", stat="identity") +
     scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
     values = cbPalette) +
-  labs( y = "Direct Carbon Emissions (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
+  ylab(bquote(atop(bold(.(Direct~Carbon~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  # ylab(bquote(atop("Direct Carbon Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  labs(
+       x = "Year",
+       fill = "Sector") + 
+  theme_bw()+
+  theme_m.rl
 ```
 
-```{r}
+```{r indirect carbon graph}
 #| title: Indirect Carbon 
+#| fig-cap: The total tonnes of indirect (Scope 2) carbon dioxide emissions produced from the Harper Adams Future Farm for the years 2020 to 2022. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
+
+
 carbon_data %>%
   mutate(indirect_carbon_tot = co2_indirect_co2_kgco2e/1000) %>%
+   filter(lineitem_code != "WHOLE_FARM") %>%
 ggplot( aes(x = Year, y = indirect_carbon_tot, fill = lineitem_code)) +
-   geom_bar(position="dodge", stat="identity") +
+   geom_bar(position="stack", stat="identity") +
     scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
     values = cbPalette) +
-  labs( y = "Indirect Carbon Emissions (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
+  # ylab(bquote(atop("Indirect Carbon Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  ylab(bquote(atop(bold(.(Indirect~Carbon~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs( 
+        x = "Year",
+        fill = "Sector") + 
+  theme_bw()+
+  theme_m.rl
 ```
 
-```{r}
+```{r methane graph}
 #| title: Methane
+#| fig-cap: The total tonnes of methane as carbon dioxide equivalent emissions produced from the Harper Adams Future Farm for the years 2020 to 2022. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
+
+
 carbon_data %>%
   mutate(methane = methane_total_kgco2e/1000) %>%
+   filter(lineitem_code != "WHOLE_FARM") %>%
 ggplot( aes(x = Year, y = methane, fill = lineitem_code)) +
-   geom_bar(position="dodge", stat="identity") +
+   geom_bar(position="stack", stat="identity") +
     scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
     values = cbPalette) +
-  labs( y = "Methane Emissions (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
+  # ylab(bquote(atop("Methane Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  ylab(bquote(atop(bold(.(Methane~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs(
+        x = "Year",  
+        fill = "Sector") + 
+  theme_bw()+
+  theme_m.rl
 ```
 
-```{r}
+```{r nitrous oxide graph}
 #| title: Nitrous Oxide
+#| fig-cap: The total tonnes of nitrous oxide as carbon dioxide equivalent emissions produced from the Harper Adams Future Farm for the years 2020 to 2022. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
+
 carbon_data %>%
   mutate(nitrous_oxide = nitrous_oxide_total_kgco2e/1000) %>%
+   filter(lineitem_code != "WHOLE_FARM") %>%
 ggplot( aes(x = Year, y = nitrous_oxide, fill = lineitem_code)) +
-   geom_bar(position="dodge", stat="identity") +
+   geom_bar(position="stack", stat="identity") +
     scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
     values = cbPalette) +
-  labs( y = "Nitrous Oxide Emissions (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
-```
+    # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  ylab(bquote(atop(bold(.(Nitrous~Oxide~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs(
+       x = "Year", 
+       fill = "Sector") + 
+  theme_bw() +
+  theme_m.rl
 
-### Column {.tabset title="Sequestration"}
-
-```{r}
-#| title: Forests
-carbon_data %>%
-  mutate(sequestration_by_forestry = sequestration_by_forestry/1000) %>%
-  filter(lineitem_code == "WHOLE_FARM") %>%
-ggplot( aes(x = Year, y = sequestration_by_forestry)) +
-   geom_bar(position="dodge", stat="identity", fill = "black") +
-  labs( y = "Foresty sequestration  (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
 
 ```
 
-```{r}
-#| title: Hedgerows 
+```{r ghg contributions graph}
+#| title: GHG contributions
+#| fig-cap: The total tonnes of green house gas (GHG) emissions (based on GWP equivlaent calculations) produced per year on the Harper Adams Future Farm presenting the quantity of the four types of GHG recorded during teh carbon calculation. Colours represent different GHG types.Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
 
-carbon_data %>%
-  mutate(sequestration_by_hedges = sequestration_by_hedges/1000) %>%
-ggplot( aes(x = Year, y = sequestration_by_hedges, fill = lineitem_code)) +
-   geom_bar(position="dodge", stat="identity") +
-    scale_fill_manual(
-    labels = c("Whole farm", "Dairy", "Beef", "Pigs", "Sheep"),
-    limits = c("WHOLE_FARM", "DAIRY", "BEEF", "PIGS", "SHEEP"),
+carbon_data %>% 
+  rename(direct = co2_direct_co2_kgco2e,
+         indirect = co2_indirect_co2_kgco2e, 
+         methane = methane_total_kgco2e,
+         nitrous_oxide = nitrous_oxide_total_kgco2e) %>%
+  pivot_longer(-c(results_id:lineitem_code),   names_to = "ghg_type", values_to = "values") %>% 
+filter(ghg_type == "direct" | ghg_type == "indirect" | ghg_type == "methane" | ghg_type == "nitrous_oxide") %>% 
+  filter(lineitem_code == "WHOLE_FARM") %>% 
+  # group_by(Year, ghg_type) %>%
+  # summarise(emission = (sum(values))/1000) %>% 
+mutate(emission = values/1000) %>% 
+  ggplot(aes(x = Year, y = emission, fill = ghg_type))+
+  geom_bar(position = "stack", stat = "identity") +
+  scale_fill_manual(
+    labels = c("Direct carbon", "Indirect carbon", "Methane", "Nitrous oxide"),
+    limits = c("direct", "indirect", "methane", "nitrous_oxide"),
     values = cbPalette) +
-  labs( y = "Hedgerow Sequestration (CO2e/kg thou.)",
-        x = "Year",  fill = "Sector") + 
-  theme_bw()
+    # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs(
+       x = "Year", 
+       fill = "GHG type") + 
+  theme_bw() +
+  theme_m.rl
+  
 ```
+
+```{r ghg contributions by sector graph}
+#| title: GHG contributions by sector
+#| fig-cap: The total tonnes of green house gas (GHG) emissions produced per year by the Harper Adams Future Farm showing contributions from individual sectors on the farm for each GHG type recorded. Colours indicate the contribution of each sector to the total emission output. Equivalent emissions were calculated using the [IPCC AR5 report](https://ar5-syr.ipcc.ch/ipcc/ipcc/resources/pdf/IPCC_SynthesisReport.pdf) guidelines on Global Warming Potential (GWP) equivalents. 
+
+carbon_data %>% 
+  rename('Direct carbon' = co2_direct_co2_kgco2e,
+         'Indirect carbon' = co2_indirect_co2_kgco2e, 
+         Methane = methane_total_kgco2e,
+         'Nitrous oxide' = nitrous_oxide_total_kgco2e) %>%
+  pivot_longer(-c(results_id:lineitem_code),   names_to = "ghg_type", values_to = "values") %>% 
+filter(ghg_type == "Direct carbon" | ghg_type == "Indirect carbon" | ghg_type == "Methane" | ghg_type == "Nitrous oxide") %>% 
+  filter(lineitem_code != "WHOLE_FARM") %>% 
+  # group_by(Year, ghg_type) %>%
+  # summarise(emission = (sum(values))/1000) %>% 
+mutate(emission = values/1000) %>% 
+  ggplot(aes(x = Year, y = emission, fill = lineitem_code))+
+  geom_bar(position = "stack", stat = "identity") +
+  facet_wrap(~ghg_type) + 
+  scale_fill_manual(
+    labels = c("Dairy", "Beef", "Pigs", "Sheep"),
+    limits = c("DAIRY", "BEEF", "PIGS", "SHEEP"),
+    values = cbPalette) +
+    # ylab(bquote(atop("Nitrous Oxide Emissions ", "(tonnes"~CO[2]~"e)"))) +
+  ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+  labs(
+       x = "Year", 
+       fill = "Sector") + 
+  theme_bw() +
+  theme_m.rl
+
+```
+
+```{r data table}
+#| title: Data table
+
+datatable(carbon_data %>% 
+            select(-farm_area),
+          filter = list(position = 'top', clear = FALSE),
+          options = list(pageLength = 10))
+```
+
+# Carbon - interactive {#carbon_int}
+
+# To do's & ideas {#todos}
 
 ## Row
-```{r} 
-datatable(carbon_data)
-```
 
-## Row {.tabset}
+::: card
+## To do list:
 
-### Column {title="Data Information"}
+-   Simple Dashboard
 
-This data comprise the output results from the [AgreCalc Farm Carbon Calculator](https://www.agrecalc.com/) for the years 2020 through to 2022. Input data was collated from across the farm for each year.
+    -   See if you can improve the table feature
 
-::: {.callout-important collapse="true"}
-### Disclaimer
+        -   Are all variables required? - Columns where all values are 0? 
 
-N.B. Data was inputted by different staff members across each year and during this time updates have also been made to the Agrecalc calculator. Therefore, it is important to note that data may not be directly comparable. Updates will be made to address this issue.
+-   Interactive dashboard
 
-N.B. The current data set only focuses on the main livestock enterprises at this time due to inconsistencies in report output between years.
+    -   Figure out layout
+
+    -   Add in data
+
+    -   Investigate interactive table/data download?
+
+    -   Improve aesthetics
+
+-   Other
+
+    -   Do a quick data check
+
+    -   See if you can make it more automated for the future (i.e., as 2023 data comes in)
+
+    -   Create a Harper theme
 :::
-
-### Data files
-
-
-| File name                                     | Link                                                           |
-|----------------------------------|--------------------------------------|
-| Cleaned data (data used here)                 | [carbon_data_clean.csv](carbon_data_clean.csv)                 |
-| Raw data                                      | [carbon_data.csv](carbon_data.csv)                             |
-| Carbon data excel file (inc. data dictionary) | [Carbon_data_agrecalc_v02.xlsx](Carbon_data_aregcalc_v02.xlsx) |
-
