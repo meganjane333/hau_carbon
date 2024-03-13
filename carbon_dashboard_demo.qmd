@@ -358,8 +358,11 @@ mutate(emission = values/1000) %>%
        x = "Year", 
        fill = "Sector") + 
   theme_bw() +
-  theme_m.rl
-
+  theme_m.rl #+
+#   theme(
+#       strip.background=element_rect(colour="black",
+#                                     aes(fill= c("#CC6677", "#AA4499", "#117733", "#332288")))
+# )
 ```
 
 ```{r data table}
