@@ -3,3 +3,74 @@ title: "Carbon_dashboard_experimenting"
 format: dashboard
 server: shiny
 ---
+
+```{r}
+#| context: setup
+
+library(tidyverse)
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(DT)
+library(bslib)
+library(shiny)
+library(bsicons)
+library(htmltools)
+
+ carbon_data <- read.csv("data/carbon_data_clean.csv") #%>% 
+#   mutate(lineitem_code = factor(lineitem_code, levels = c("DAIRY", "BEEF", "PIGS", "SHEEP", "WHOLE_FARM")))
+```
+
+# {.sidebar}
+
+```{r}
+selectInput('x', 'X', names(dataset))
+selectInput('y', 'Y', names(carbon_data), names(carbon_data)[[2]])
+selectInput('colour', 'Colour', c('None', names(carbon_data)))
+```
+
+```{r}
+selectInput('facet_row', 'Facet Row', c(None = '.', names(carbon_data[sapply(carbon_data, is.factor)])))
+selectInput('facet_col', 'Facet Column', c(None = '.', names(carbon_data[sapply(carbon_data, is.factor)])))
+```
+
+# Plot
+
+```{r}
+# plotOutput('plot')
+```
+
+# Data
+
+```{r}
+# tableOutput('data')
+```
+
+```{r}
+# #| context: server
+# 
+# output$plot <- renderPlot({
+#   
+#   p <-ggplot(
+#     dataset(),
+#     aes_string(x=input$x, y=input$y)) +
+#     geom_bar()
+#   
+#   if (input$colour != 'None')
+#     p <- p + aes_string(colour = input$colour)
+#   
+#   facets <- paste(input$facet_row, '~', input$facet_col)
+#   
+#   if (facets != 'None')
+#     p <- p + facet_grid(facets)
+#   
+#   p
+#   
+#   
+# })
+# 
+# 
+# output$data <- renderTable({
+#   dataset()
+# })
+# ```
