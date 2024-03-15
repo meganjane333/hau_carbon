@@ -385,7 +385,7 @@ datatable(carbon_data %>%
 # Experimenting {#experimenting}
 
 
-## Column 
+## Column {width="40%"}
 ```{r leaflet prep}
 library(leaflet)
 
@@ -614,19 +614,19 @@ n2o_pal <- c("maroon3","hotpink","lightpink") #pink purple
 
 
 ```{r}
-#| title: DAIRY
+#| title: Dairy
  
 detail_ghg_pal <- c("darkorange", 
                     "orangered",
                     "indianred4", 
                     "firebrick", 
                     "tan3",# direct carbon
-                    "lightsalmon",
+                   # "lightsalmon",
                     "orange",
                     "coral",
                     "chocolate1", 
                     "sienna3",
-                  #  "tomato3" ,
+                    "tomato3" ,
                     "lightsalmon3",
                     "orange3",
                     "tomato", 
@@ -649,21 +649,22 @@ c_data %>%
     labels = c("Diesel", 
                "Electricity", 
                "Other fuels",
-               "Renewable \nelectricity",
-               "Renewable \nheat",
+               "Renewable electricity",
+               "Renewable heat",
                "Bedding", 
                "Biochar", 
-               "Disposal of \ncarcasses", 
+               "Disposal of carcasses", 
                "Feed", 
                "Fertiliser", 
-             #  "Lime", 
+               #"Lime", 
                "Pesticides", 
-               "Refrigerant \nlosses", 
+               "Refrigerant losses", 
                "Transport", "Waste",
-               "Fermentation, feed \n & digestion",
+               "Fermentation, feed & digestion",
                "Manure management",
-               "Inorganic and \nimported organic \nmanure",
-               "Grazing manure \nmanagement", "Veg and crop \nN residues"),
+               "Inorganic & imported organic manure",
+               "Grazing manure management", 
+               "Veg & crop N residues"),
      limits = c("co2_dir_emissions_diesel_kgco2e", 
                 "co2_dir_emissions_electricity_kgco2e",
                 "co2_dir_emissions_other_fuels_kgco2e", 
@@ -674,7 +675,7 @@ c_data %>%
                 "co2_dir_ind_emissions_disposal_of_carcasses_kgco2e",
                 "co2_dir_ind_emissions_feed_kgco2e",
                 "co2_dir_ind_emissions_fertiliser_kgco2e",
-              #  "co2_dir_ind_emissions_lime_kgco2e",
+               #"co2_dir_ind_emissions_lime_kgco2e",
                 "co2_dir_ind_emissions_pesticides_kgco2e",
                 "co2_dir_ind_emissions_refrigerant_losses_kgco2e",
                 "co2_dir_ind_emissions_transport_kgco2e",
@@ -685,7 +686,7 @@ c_data %>%
                 "nitrous_oxide_vol_grazing_dep_man_mgmt_org_man_soil_kgco2e",
                 "nitrous_oxide_veg_crop_n_residues_kgco2e"),
        values = detail_ghg_pal) +
-    ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+     ylab(bquote(atop(bold(.(GHG~Emissions~tonnes~(CO[2]~e)))))) +
     labs( x = "Year", fill = "Emissions source")+
     facet_wrap(~ghg_name_detail)
 
@@ -704,21 +705,22 @@ c_data %>%
     labels = c("Diesel", 
                "Electricity", 
                "Other fuels",
-               "Renewable \nelectricity",
-               "Renewable \nheat",
+               "Renewable electricity",
+               "Renewable heat",
                "Bedding", 
                "Biochar", 
-               "Disposal of \ncarcasses", 
+               "Disposal of carcasses", 
                "Feed", 
                "Fertiliser", 
-             #  "Lime", 
+               #"Lime", 
                "Pesticides", 
-               "Refrigerant \nlosses", 
+               "Refrigerant losses", 
                "Transport", "Waste",
-               "Fermentation, feed \n & digestion",
+               "Fermentation, feed & digestion",
                "Manure management",
-               "Inorganic and \nimported organic \nmanure",
-               "Grazing manure \nmanagement", "Veg and crop \nN residues"),
+               "Inorganic & imported organic manure",
+               "Grazing manure management", 
+               "Veg & crop N residues"),
      limits = c("co2_dir_emissions_diesel_kgco2e", 
                 "co2_dir_emissions_electricity_kgco2e",
                 "co2_dir_emissions_other_fuels_kgco2e", 
@@ -729,7 +731,7 @@ c_data %>%
                 "co2_dir_ind_emissions_disposal_of_carcasses_kgco2e",
                 "co2_dir_ind_emissions_feed_kgco2e",
                 "co2_dir_ind_emissions_fertiliser_kgco2e",
-               # "co2_dir_ind_emissions_lime_kgco2e",
+                #"co2_dir_ind_emissions_lime_kgco2e",
                 "co2_dir_ind_emissions_pesticides_kgco2e",
                 "co2_dir_ind_emissions_refrigerant_losses_kgco2e",
                 "co2_dir_ind_emissions_transport_kgco2e",
@@ -740,7 +742,7 @@ c_data %>%
                 "nitrous_oxide_vol_grazing_dep_man_mgmt_org_man_soil_kgco2e",
                 "nitrous_oxide_veg_crop_n_residues_kgco2e"),
        values = detail_ghg_pal) +
-    ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+    ylab(bquote(atop(bold(.(GHG~Emissions~tonnes~(CO[2]~e)))))) +
     labs( x = "Year", fill = "Emissions source")+
     facet_wrap(~ghg_name_detail)
 
@@ -760,21 +762,22 @@ c_data %>%
     labels = c("Diesel", 
                "Electricity", 
                "Other fuels",
-               "Renewable \nelectricity",
-               "Renewable \nheat",
+               "Renewable electricity",
+               "Renewable heat",
                "Bedding", 
                "Biochar", 
-               "Disposal of \ncarcasses", 
+               "Disposal of carcasses", 
                "Feed", 
                "Fertiliser", 
-              # "Lime", 
+               #"Lime", 
                "Pesticides", 
-               "Refrigerant \nlosses", 
+               "Refrigerant losses", 
                "Transport", "Waste",
-               "Fermentation, feed \n & digestion",
+               "Fermentation, feed & digestion",
                "Manure management",
-               "Inorganic and \nimported organic \nmanure",
-               "Grazing manure \nmanagement", "Veg and crop \nN residues"),
+               "Inorganic & imported organic manure",
+               "Grazing manure management", 
+               "Veg & crop N residues"),
      limits = c("co2_dir_emissions_diesel_kgco2e", 
                 "co2_dir_emissions_electricity_kgco2e",
                 "co2_dir_emissions_other_fuels_kgco2e", 
@@ -785,7 +788,7 @@ c_data %>%
                 "co2_dir_ind_emissions_disposal_of_carcasses_kgco2e",
                 "co2_dir_ind_emissions_feed_kgco2e",
                 "co2_dir_ind_emissions_fertiliser_kgco2e",
-              #  "co2_dir_ind_emissions_lime_kgco2e",
+                #"co2_dir_ind_emissions_lime_kgco2e",
                 "co2_dir_ind_emissions_pesticides_kgco2e",
                 "co2_dir_ind_emissions_refrigerant_losses_kgco2e",
                 "co2_dir_ind_emissions_transport_kgco2e",
@@ -796,7 +799,7 @@ c_data %>%
                 "nitrous_oxide_vol_grazing_dep_man_mgmt_org_man_soil_kgco2e",
                 "nitrous_oxide_veg_crop_n_residues_kgco2e"),
        values = detail_ghg_pal) +
-    ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+    ylab(bquote(atop(bold(.(GHG~Emissions~(tonnes~CO[2]~e)))))) +
     labs( x = "Year", fill = "Emissions source")+
     facet_wrap(~ghg_name_detail)
 
@@ -815,21 +818,22 @@ c_data %>%
     labels = c("Diesel", 
                "Electricity", 
                "Other fuels",
-               "Renewable \nelectricity",
-               "Renewable \nheat",
+               "Renewable electricity",
+               "Renewable heat",
                "Bedding", 
                "Biochar", 
-               "Disposal of \ncarcasses", 
+               "Disposal of carcasses", 
                "Feed", 
                "Fertiliser", 
-             #  "Lime", 
+               #"Lime", 
                "Pesticides", 
-               "Refrigerant \nlosses", 
+               "Refrigerant losses", 
                "Transport", "Waste",
-               "Fermentation, feed \n & digestion",
+               "Fermentation, feed & digestion",
                "Manure management",
-               "Inorganic and \nimported organic \nmanure",
-               "Grazing manure \nmanagement", "Veg and crop \nN residues"),
+               "Inorganic & imported organic manure",
+               "Grazing manure management", 
+               "Veg & crop N residues"),
      limits = c("co2_dir_emissions_diesel_kgco2e", 
                 "co2_dir_emissions_electricity_kgco2e",
                 "co2_dir_emissions_other_fuels_kgco2e", 
@@ -840,7 +844,7 @@ c_data %>%
                 "co2_dir_ind_emissions_disposal_of_carcasses_kgco2e",
                 "co2_dir_ind_emissions_feed_kgco2e",
                 "co2_dir_ind_emissions_fertiliser_kgco2e",
-              #  "co2_dir_ind_emissions_lime_kgco2e",
+                #"co2_dir_ind_emissions_lime_kgco2e",
                 "co2_dir_ind_emissions_pesticides_kgco2e",
                 "co2_dir_ind_emissions_refrigerant_losses_kgco2e",
                 "co2_dir_ind_emissions_transport_kgco2e",
@@ -851,7 +855,7 @@ c_data %>%
                 "nitrous_oxide_vol_grazing_dep_man_mgmt_org_man_soil_kgco2e",
                 "nitrous_oxide_veg_crop_n_residues_kgco2e"),
        values = detail_ghg_pal) +
-    ylab(bquote(atop(bold(.(GHG~Emissions)), (bold(.(tonnes~CO[2]~e)))))) +
+    ylab(bquote(atop(bold(.(GHG~Emissions~(tonnes~CO[2]~e)))))) +
     labs( x = "Year", fill = "Emissions source")+
     facet_wrap(~ghg_name_detail)
 
